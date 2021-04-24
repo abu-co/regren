@@ -71,6 +71,15 @@ struct Options {
 	}
 };
 
+class quoted_string {
+	std::string_view str;
+public:
+	constexpr quoted_string(std::string_view s) noexcept : str(std::move(s)) {}
+	friend std::ostream& operator<<(std::ostream& os, const quoted_string& self) {
+		return os << '"' << self.str << '"';
+	}
+};
+
 static void print_help(std::string_view self_name) {
 	const auto exe_name_pos = self_name.find_last_of("/\\") + 1;
 	const std::string_view exe_name =
@@ -299,7 +308,7 @@ int main(int argc, const char* argv[])
 			}
 			cout
 				<< "File "
-				<< std::quoted(new_name)
+				<< quoted_string(new_name)
 				<< " already exists; skipping..."
 				<< endl;
 			continue;
@@ -313,18 +322,18 @@ int main(int argc, const char* argv[])
 		if (err) {
 			cerr
 				<< "Error: Unable to rename file "
-				<< std::quoted(old_name)
+				<< quoted_string(old_name)
 				<< " to "
-				<< std::quoted(new_name) << ':'
+				<< quoted_string(new_name) << ':'
 				<< endl
 				<< TAB_CHARS << err
 				<< endl;
 		}
 		else {
 			cout
-				<< std::quoted(old_name)
+				<< quoted_string(old_name)
 				<< " --> "
-				<< std::quoted(new_name)
+				<< quoted_string(new_name)
 				<< endl;
 			renamed_count++;
 		}
